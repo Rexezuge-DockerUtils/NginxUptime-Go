@@ -75,7 +75,7 @@ func getNginxUptimeData() (*UptimeResponse, error) {
 	)
 
 	return &UptimeResponse{
-		Status:        "ok",
+		Status:        "HEALTHY",
 		Timestamp:     now.Unix(),
 		UptimeSeconds: int64(uptimeDuration.Seconds()),
 		Days:          days,
