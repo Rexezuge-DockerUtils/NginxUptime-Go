@@ -12,21 +12,13 @@ COPY . .
 RUN CGO_ENABLED=0 go build -ldflags "-s -w" .
 
 ## Compress executable
-FROM debian:12 AS compressor
+FROM rexezugedockerutils/upx AS upx
 
-WORKDIR /tmp
+FROM debian:stable-slim AS compressor
+
+COPY --from=upx /upx /usr/local/bin/upx
 
 COPY --from=0 /app/NginxUptimeGo/nginx-uptime-go /NginxUptime-Go
-
-# Install dependencies
-RUN apt-get update \
- && apt-get install -y --no-install-recommends build-essential curl ca-certificates
-
-ARG UPX_VERSION=5.0.2
-
-RUN curl -L https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-amd64_linux.tar.xz -o /tmp/upx.tar.xz \
- && tar -xf /tmp/upx.tar.xz -C /tmp \
- && mv /tmp/upx-${UPX_VERSION}-amd64_linux/upx /usr/local/bin/upx
 
 RUN upx --best --lzma /NginxUptime-Go
 
